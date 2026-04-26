@@ -1,5 +1,9 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
+  devServer: {
+    port: 3003,
+    host: "0.0.0.0",
+  },
   // Habilitamos la estructura de Nuxt 4
   future: {
     compatibilityVersion: 4,
