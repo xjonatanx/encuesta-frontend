@@ -424,42 +424,42 @@
                     para continuar.
                 </small>
                 <br></br>
-                <div
-                    class="d-flex flex-column flex-md-row justify-content-between align-items-center pb-5 border-top pt-4"
-                >
-                    <div class="mb-3 mb-md-0">
-                        <b-button
-                            variant="warning"
-                            size="md"
-                            @click="confirmarGuardarYSalir"
-                        >
-                            <i class="bi bi-box-arrow-left"></i> Guardar
-                            progreso y salir
-                        </b-button>
-                    </div>
+                <div class="border-top pt-4 pb-5">
+                  <b-row align-v="center" class="gy-3">
 
-                    <div class="d-flex align-items-center">
-                        <b-button
-                            variant="secondary"
-                            size="md"
-                            style="margin-right: 15px"
-                            class="mr-3 px-4"
-                            @click="intentarCambiarPaso(0)"
-                        >
-                            Atrás
-                        </b-button>
+                    <b-col cols="12" md="4" class="text-left">
+                      <b-button
+                        variant="warning"
+                        class="shadow-sm w-100 w-md-auto px-4"
+                        style="min-width: 200px; display: inline-flex; align-items: center; justify-content: center;"
+                        @click="confirmarGuardarYSalir"
+                      >
+                        <i class="bi bi-box-arrow-left" style="margin-right: 10px"></i> Guardar y salir
+                      </b-button>
+                    </b-col>
 
-                        <b-button
-                            variant="success"
-                            size="md"
-                            class="px-5 font-weight-bold shadow-sm"
-                            :disabled="!identificacionValida"
-                            @click="intentarCambiarPaso(2)"
-                        >
-                            Comenzar evaluación
-                            <i class="bi bi-arrow-right-short"></i>
-                        </b-button>
-                    </div>
+                    <b-col cols="12" md="8" class="d-flex justify-content-between justify-content-md-end" style="gap: 15px;">
+                      <b-button
+                        variant="secondary"
+                        class="px-4 flex-grow-1 flex-md-grow-0"
+                        style="min-width: 100px;"
+                        @click="intentarCambiarPaso(0)"
+                      >
+                        Atrás
+                      </b-button>
+
+                      <b-button
+                        variant="primary"
+                        class="px-4 px-md-5 font-weight-bold shadow-sm flex-grow-1 flex-md-grow-0"
+                        style="min-width: 160px;"
+                        :disabled="!identificacionValida"
+                        @click="intentarCambiarPaso(2)"
+                      >
+                        Siguiente <i class="bi bi-arrow-right-short ml-1"></i>
+                      </b-button>
+                    </b-col>
+
+                  </b-row>
                 </div>
             </div>
 
@@ -512,42 +512,52 @@
                     />
                 </div>
 
-                <div
-                    class="d-flex flex-wrap justify-content-between align-items-center mt-5 pb-5 border-top pt-4"
-                >
-                    <b-button
-                        size="md"
-                        variant="secondary"
-                        class="px-4 mb-2 mb-md-0"
-                        @click="intentarCambiarPaso(paso - 1)"
-                    >
-                        <i class="bi bi-arrow-left"></i> Anterior
-                    </b-button>
+                <div class="border-top pt-4 pb-5 mt-5">
+                    <b-row align-v="center" class="gy-3">
 
-                    <b-button
-                        variant="warning"
-                        size="md"
-                        @click="confirmarGuardarYSalir"
-                    >
-                        <i class="bi bi-save"></i> Guardar progreso y salir
-                    </b-button>
+                        <b-col cols="6" md="3" class="order-2 order-md-1">
+                            <b-button
+                                size="md"
+                                variant="outline-secondary"
+                                class="w-100 px-4"
+                                @click="intentarCambiarPaso(paso - 1)"
+                            >
+                                <i class="bi bi-arrow-left"></i> Anterior
+                            </b-button>
+                        </b-col>
 
-                    <b-button
-                        size="md"
-                        :variant="seccionCompleta ? 'primary' : 'light'"
-                        class="px-4 mb-2 mb-md-0 font-weight-bold shadow-sm"
-                        :class="{ 'text-muted': !seccionCompleta }"
-                        @click="intentarCambiarPaso(paso + 1)"
-                        :disabled="!seccionCompleta"
-                    >
-                        <template v-if="seccionCompleta">
-                            Siguiente <i class="bi bi-arrow-right"></i>
-                        </template>
-                        <template v-else>
-                            <i class="bi bi-lock-fill mr-1"></i> Responde todo
-                            para continuar
-                        </template>
-                    </b-button>
+                        <b-col cols="12" md="6" class="order-1 order-md-2 text-center">
+                            <b-button
+                                variant="warning"
+                                size="md"
+                                class="w-100 w-md-auto px-4 shadow-sm"
+                                @click="confirmarGuardarYSalir"
+                            >
+                                <i class="bi bi-save mr-1"></i> Guardar y salir
+                            </b-button>
+                        </b-col>
+
+                        <b-col cols="6" md="3" class="order-3 order-md-3 text-right">
+                            <b-button
+                                size="md"
+                                :variant="seccionCompleta ? 'primary' : 'light'"
+                                class="w-100 px-2 font-weight-bold shadow-sm"
+                                :class="{ 'text-muted border': !seccionCompleta }"
+                                @click="intentarCambiarPaso(paso + 1)"
+                                :disabled="!seccionCompleta"
+                            >
+                                <template v-if="seccionCompleta">
+                                    Siguiente <i class="bi bi-arrow-right"></i>
+                                </template>
+                                <template v-else>
+                                    <i class="bi bi-lock-fill" style="margin-right: 7px"></i>
+                                    <span class="d-none d-lg-inline">Faltan respuestas</span>
+                                    <span class="d-inline d-lg-none">Incompleto</span>
+                                </template>
+                            </b-button>
+                        </b-col>
+
+                    </b-row>
                 </div>
             </div>
 
@@ -590,35 +600,43 @@
                         </tr>
                     </tbody>
                 </table>
-                <div
-                    class="d-flex flex-wrap justify-content-between align-items-center mt-5 pb-5 border-top pt-4"
-                >
-                    <b-button
-                        size="md"
-                        variant="secondary"
-                        class="px-4"
-                        @click="intentarCambiarPaso(7)"
-                    >
-                        <i class="bi bi-chevron-left"></i> Anterior
-                    </b-button>
+                <div class="border-top pt-4 pb-5 mt-5">
+                    <b-row align-v="center" class="gy-3">
 
-                    <b-button
-                        variant="warning"
-                        size="md"
-                        class="text-muted mx-auto mx-md-0"
-                        @click="confirmarGuardarYSalir"
-                    >
-                        <i class="bi bi-save"></i> Guardar progreso y salir
-                    </b-button>
+                        <b-col cols="6" md="3" class="order-2 order-md-1">
+                            <b-button
+                                size="md"
+                                variant="secondary"
+                                class="w-100 px-4 shadow-sm"
+                                @click="intentarCambiarPaso(7)"
+                            >
+                                <i class="bi bi-chevron-left"></i> Anterior
+                            </b-button>
+                        </b-col>
 
-                    <b-button
-                        variant="primary"
-                        size="md"
-                        class="px-4 shadow-sm font-weight-bold"
-                        @click="intentarCambiarPaso(9)"
-                    >
-                        Siguiente <i class="bi bi-chevron-right"></i>
-                    </b-button>
+                        <b-col cols="12" md="6" class="order-1 order-md-2 text-center">
+                            <b-button
+                                variant="warning"
+                                size="md"
+                                class="w-100 w-md-auto px-4 shadow-sm"
+                                @click="confirmarGuardarYSalir"
+                            >
+                                <i class="bi bi-save"></i> Guardar progreso y salir
+                            </b-button>
+                        </b-col>
+
+                        <b-col cols="6" md="3" class="order-3 order-md-3 text-right text-md-right">
+                            <b-button
+                                variant="primary"
+                                size="md"
+                                class="w-100 px-4 shadow-sm font-weight-bold"
+                                @click="intentarCambiarPaso(9)"
+                            >
+                                Siguiente <i class="bi bi-chevron-right"></i>
+                            </b-button>
+                        </b-col>
+
+                    </b-row>
                 </div>
             </div>
 
@@ -676,34 +694,44 @@
                     />
                 </b-form-group>
 
-                <div
-                    class="d-flex flex-wrap justify-content-between align-items-center mt-5 pb-5 border-top pt-4"
-                >
-                    <b-button
-                        size="md"
-                        variant="secondary"
-                        class="px-4 mb-2 mb-md-0"
-                        @click="intentarCambiarPaso(8)"
-                    >
-                        <i class="bi bi-arrow-left"></i> Regresar
-                    </b-button>
+                <div class="border-top pt-4 pb-5 mt-5">
+                    <b-row align-v="center" class="gy-3">
 
-                    <b-button
-                        variant="warning"
-                        size="md"
-                        @click="confirmarGuardarYSalir"
-                    >
-                        <i class="bi bi-save"></i> Guardar progreso y salir
-                    </b-button>
+                        <b-col cols="6" md="3" class="order-2 order-md-1">
+                            <b-button
+                                size="md"
+                                variant="secondary"
+                                class="w-100 px-4"
+                                @click="intentarCambiarPaso(8)"
+                            >
+                                <i class="bi bi-arrow-left"></i> Regresar
+                            </b-button>
+                        </b-col>
 
-                    <b-button
-                        variant="success"
-                        size="md"
-                        @click="intentarFinalizar"
-                    >
-                        <i class="bi bi-check2-circle mr-2"></i>
-                        Finalizar y enviar
-                    </b-button>
+                        <b-col cols="12" md="6" class="order-1 order-md-2 text-center">
+                            <b-button
+                                variant="warning"
+                                size="md"
+                                class="w-100 w-md-auto px-4 shadow-sm"
+                                @click="confirmarGuardarYSalir"
+                            >
+                                <i class="bi bi-save"></i> Guardar progreso y salir
+                            </b-button>
+                        </b-col>
+
+                        <b-col cols="6" md="3" class="order-3 order-md-3 text-right">
+                            <b-button
+                                variant="success"
+                                size="md"
+                                class="w-100 px-2 px-md-4 font-weight-bold shadow-sm"
+                                @click="intentarFinalizar"
+                            >
+                                <i class="bi bi-check2-circle d-none d-sm-inline mr-1"></i>
+                                Finalizar
+                            </b-button>
+                        </b-col>
+
+                    </b-row>
                 </div>
             </div>
         </div>

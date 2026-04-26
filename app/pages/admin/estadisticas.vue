@@ -40,8 +40,9 @@
         </nav>
 
         <b-container fluid class="p-4">
-            <b-row class="mb-4" v-if="loaded">
+            <b-row v-if="loaded">
                 <b-col
+                    class="mb-4"
                     md="2"
                     v-for="kpi in [
                         {
@@ -130,8 +131,8 @@
                 <p class="text-muted mt-2">Cargando métricas de clima...</p>
             </div>
 
-            <b-row class="mb-4" v-if="loaded">
-                <b-col lg="8">
+            <b-row v-if="loaded">
+                <b-col lg="8" class="mb-4">
                     <b-card border-0 shadow-sm rounded-xl>
                         <template #header>
                             <div
@@ -223,7 +224,7 @@
                         </div>
                     </b-card>
                 </b-col>
-                <b-col lg="4">
+                <b-col lg="4" class="mb-4">
                     <b-card border-0 shadow-sm rounded-xl>
                         <template #header>
                             <div
@@ -287,8 +288,8 @@
                 </b-col>
             </b-row>
 
-            <b-row class="mb-4" v-if="loaded">
-                <b-col lg="7">
+            <b-row v-if="loaded">
+                <b-col class="mb-4" lg="7">
                     <b-card border-0 shadow-sm rounded-xl>
                         <template #header>
                             <div
@@ -393,7 +394,7 @@
                         </div>
                     </b-card>
                 </b-col>
-                <b-col lg="5">
+                <b-col class="mb-4" lg="5">
                     <b-card border-0 shadow-sm rounded-xl>
                         <template #header>
                             <div
@@ -498,7 +499,7 @@
             </b-row>
 
             <b-row v-if="loaded">
-                <b-col lg="4">
+                <b-col lg="4" class="mb-4">
                     <b-card
                         border-0
                         shadow-sm
@@ -578,7 +579,7 @@
                         </template>
                     </b-card>
                 </b-col>
-                <b-col lg="4">
+                <b-col class="mb-4" lg="4">
                     <b-card border-0 shadow-sm rounded-xl>
                         <template #header>
                             <div
@@ -641,7 +642,7 @@
                         </div>
                     </b-card>
                 </b-col>
-                <b-col lg="4">
+                <b-col class="mb-4" lg="4">
                     <b-card border-0 shadow-sm rounded-xl>
                         <template #header>
                             <div
