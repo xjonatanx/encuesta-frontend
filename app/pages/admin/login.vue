@@ -110,14 +110,17 @@ const handleLogin = async () => {
 
     try {
         // LLAMADA REAL AL BACKEND
-        // Ajusta la URL (http://localhost:3001) según donde corra tu encuesta-backend
-        const response = await $fetch("http://localhost:3001/api/admin/login", {
-            method: "POST",
-            body: {
-                user: form.value.user,
-                pass: form.value.pass,
+        // Ajusta la URL (https://pybingenieriachile.cl/api/encuestas) según donde corra tu encuesta-backend
+        const response = await $fetch(
+            "https://pybingenieriachile.cl/api/encuestas/api/admin/login",
+            {
+                method: "POST",
+                body: {
+                    user: form.value.user,
+                    pass: form.value.pass,
+                },
             },
-        });
+        );
 
         // Si el backend responde con éxito:
         if (response.token) {

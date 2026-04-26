@@ -1118,7 +1118,7 @@ const guardarProgresoBD = async (statusArg = "DRAFT") => {
     if (!auth.value?.id) return;
 
     try {
-        await $fetch("http://localhost:3001/api/survey/save", {
+        await $fetch("https://pybingenieriachile.cl/api/encuestas/api/survey/save", {
             method: "PATCH",
             headers: {
                 Authorization: `Bearer ${auth.value.token}`,
@@ -1161,7 +1161,7 @@ onMounted(async () => {
     if (!auth.value) return navigateTo("/");
     try {
         const s = await $fetch(
-            `http://localhost:3001/api/survey/${auth.value.id}`,
+            `https://pybingenieriachile.cl/api/encuestas/api/survey/${auth.value.id}`,
             {
                 method: "GET",
                 headers: {

@@ -270,10 +270,13 @@ const login = async () => {
 
     try {
         // 2. Llamada al Backend (Recibirá { id, rut, token })
-        const data = await $fetch("http://localhost:3001/api/auth/login", {
-            method: "POST",
-            body: { rut: rutParaServidor },
-        });
+        const data = await $fetch(
+            "https://pybingenieriachile.cl/api/encuestas/api/auth/login",
+            {
+                method: "POST",
+                body: { rut: rutParaServidor },
+            },
+        );
 
         // 3. Configuración de la Cookie
         // Usamos opciones para que la sesión sea persistente y segura

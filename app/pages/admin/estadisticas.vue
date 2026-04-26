@@ -790,7 +790,7 @@ const cargarDashboard = async () => {
 
     try {
         const data = await $fetch(
-            "http://localhost:3001/api/admin/stats-full",
+            "https://pybingenieriachile.cl/api/encuestas/api/admin/stats-full",
             {
                 headers: { Authorization: `Bearer ${token}` },
             },
