@@ -399,12 +399,12 @@
                                 ><b-form-input
                                     v-model="form.jefeDirecto" /></b-form-group
                         ></b-col>
-                        <b-col md="6"
+                        <!-- <b-col md="6"
                             ><b-form-group
                                 label="Supervisor Directo (opcional):"
                                 ><b-form-input
                                     v-model="form.supervisor" /></b-form-group
-                        ></b-col>
+                        ></b-col> -->
                             <b-col md="6">
                               <b-form-group label="Turno:">
                                 <b-form-select
@@ -820,7 +820,7 @@ const modalFinal = ref(null);
 const form = ref({
     cargo: "",
     jefeDirecto: "",
-    supervisor: "",
+    // supervisor: "",
     turno: "",
     respuestas: {
         empresa: {},
@@ -842,7 +842,7 @@ const identificacionValida = computed(() => {
     return (
         f.cargo?.trim() &&
         f.jefeDirecto?.trim() &&
-        f.supervisor?.trim() &&
+        // f.supervisor?.trim() &&
         f.turno?.trim()
     );
 });
@@ -1209,7 +1209,7 @@ onMounted(async () => {
             // 3. Asignación campo por campo para asegurar reactividad
             form.value.cargo = savedData.cargo || "";
             form.value.jefeDirecto = savedData.jefeDirecto || "";
-            form.value.supervisor = savedData.supervisor || "";
+            // form.value.supervisor = savedData.supervisor || "";
             form.value.turno = savedData.turno || "";
             form.value.recomendacion = savedData.recomendacion || null;
             form.value.destacados = savedData.destacados || "";
