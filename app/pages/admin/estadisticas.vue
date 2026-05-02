@@ -123,6 +123,15 @@
                         </small>
 
                         <div
+                            v-if="kpi.l.includes('M8')"
+                            class="text-primary mb-2"
+                            style="font-size: 0.7rem"
+                        >
+                            <i class="bi bi-hand-index-thumb"></i> Haz clic para
+                            ver detalles
+                        </div>
+
+                        <div
                             class="d-flex align-items-center justify-content-between"
                         >
                             <h4 class="mb-0 fw-bold text-navy">
@@ -172,6 +181,12 @@
                         responsive
                         small
                     >
+                        <!-- Slot personalizado para formatear el RUT -->
+                        <template #cell(rut)="data">
+                            <span class="font-monospace fw-bold">
+                                {{ formatearRut(data.value) }}
+                            </span>
+                        </template>
                         <template #cell(rec)="data">
                             <b-badge
                                 :variant="
@@ -827,8 +842,33 @@ const camposAlertas = [
     { key: "rut", label: "RUT Colaborador", sortable: true },
     { key: "rec", label: "Puntaje", sortable: true },
     { key: "turno", label: "Turno", sortable: true },
-    { key: "estado", label: "Prioridad" },
 ];
+
+const formatearRut = (rut) => {
+    if (!rut) return "N/A";
+
+    // 1. Limpiar el RUT de puntos y guiones existentes
+    let valor = rut.replace(/\./g, "").replace(/-/g, "").trim();
+
+    if (valor.length < 2) return valor;
+
+    // 2. Separar el cuerpo del dígito verificador
+    let cuerpo = valor.slice(0, -1);
+    let dv = valor.slice(-1).toUpperCase();
+
+    // 3. Formatear el cuerpo con puntos usando una expresión regular
+    cuerpo = cuerpo
+        .toString()
+        .split("")
+        .reverse()
+        .join("")
+        .replace(/(?=\d)\d{3}(?=\d)/g, "$&.")
+        .split("")
+        .reverse()
+        .join("");
+
+    return `${cuerpo}-${dv}`;
+};
 
 const obtenerAlertasPaginadas = async (page = 1) => {
     const token = useCookie("admin_token").value;
@@ -1058,5 +1098,28 @@ onMounted(cargarDashboard);
 }
 .pulse-icon {
     animation: pulse-red 2s infinite;
+}
+
+/* Clase para la tarjeta de alertas */
+.cursor-pointer.border-pulse:hover {
+    border-top-color: #dc3545 !important; /* Rojo alerta */
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.3) !important;
+    transform: scale(1.02);
+    transition: all 0.3s ease;
+}
+
+/* Animación opcional para el icono de la mano */
+@keyframes finger-move {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+}
+.bi-hand-index-thumb {
+    display: inline-block;
+    animation: finger-move 1.5s infinite;
 }
 </style>
