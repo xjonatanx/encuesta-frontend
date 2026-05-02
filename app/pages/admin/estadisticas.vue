@@ -98,16 +98,30 @@
                 >
                     <div
                         class="bg-white p-3 rounded shadow-sm border-top border-4 h-100 position-relative"
-                        :class="'border-' + kpi.c"
+                        :class="[
+                            'border-' + kpi.c,
+                            kpi.l.includes('M8') ? 'cursor-pointer' : '',
+                        ]"
                         v-b-tooltip.hover
                         :title="kpi.t"
+                        @click="
+                            kpi.l.includes('M8') ? abrirModalAlertas() : null
+                        "
                     >
+                        <!-- El resto de tu contenido interno se mantiene igual -->
                         <small
                             class="text-muted fw-bold d-block text-uppercase mb-1"
                             style="font-size: 0.65rem"
                         >
-                            {{ kpi.l }} <i class="bi bi-info-circle ms-1"></i>
+                            {{ kpi.l }}
+                            <!-- Icono de click solo para alertas -->
+                            <i
+                                v-if="kpi.l.includes('M8')"
+                                class="bi bi-box-arrow-in-up-right ms-1 text-primary"
+                            ></i>
+                            <i v-else class="bi bi-info-circle ms-1"></i>
                         </small>
+
                         <div
                             class="d-flex align-items-center justify-content-between"
                         >
@@ -118,7 +132,11 @@
                                 }}</small>
                             </h4>
                             <i
-                                :class="'bi bi-' + kpi.i + ' text-' + kpi.c"
+                                :class="[
+                                    'bi bi-' + kpi.i,
+                                    'text-' + kpi.c,
+                                    kpi.l.includes('M8') ? 'pulse-icon' : '',
+                                ]"
                                 style="font-size: 1.2rem"
                             ></i>
                         </div>
@@ -130,6 +148,64 @@
                 <b-spinner variant="primary"></b-spinner>
                 <p class="text-muted mt-2">Cargando métricas de clima...</p>
             </div>
+
+            <b-modal
+                v-model="mostrarDetalleAlertas"
+                title="Gestión Integral de Alertas Críticas"
+                size="lg"
+                ok-only
+                ok-title="Cancelar"
+                ok-variant="secondary"
+            >
+                <!-- Spinner de carga -->
+                <div v-if="cargandoAlertas" class="text-center py-5">
+                    <b-spinner variant="danger"></b-spinner>
+                    <p>Cargando todos los registros...</p>
+                </div>
+
+                <div v-else>
+                    <b-table
+                        :items="alertasPaginadas"
+                        :fields="camposAlertas"
+                        striped
+                        hover
+                        responsive
+                        small
+                    >
+                        <template #cell(rec)="data">
+                            <b-badge
+                                :variant="
+                                    data.value <= 3 ? 'danger' : 'warning'
+                                "
+                            >
+                                {{ data.value }} / 10
+                            </b-badge>
+                        </template>
+                    </b-table>
+
+                    <!-- Componente de Paginación -->
+                    <div
+                        class="d-flex justify-content-between align-items-center mt-3"
+                    >
+                        <small class="text-muted">
+                            Mostrando página {{ paginaActual }} de
+                            {{ Math.ceil(totalAlertas / porPagina) }} ({{
+                                totalAlertas
+                            }}
+                            registros totales)
+                        </small>
+
+                        <b-pagination
+                            v-model="paginaActual"
+                            :total-rows="totalAlertas"
+                            :per-page="porPagina"
+                            @change="obtenerAlertasPaginadas"
+                            size="sm"
+                            pills
+                        ></b-pagination>
+                    </div>
+                </div>
+            </b-modal>
 
             <b-row v-if="loaded">
                 <b-col lg="8" class="mb-4">
@@ -313,48 +389,36 @@
                             </div>
                         </template>
 
-                        <b-table
-                            :items="stats.rankingJefes"
-                            :fields="jefeFields"
-                            striped
-                            hover
-                            small
-                            responsive
-                            class="mb-0"
+                        <div
+                            v-for="jefe in stats.rankingJefes"
+                            :key="jefe.name"
+                            class="mb-4"
                         >
-                            <template #cell(avg)="data">
-                                <div
-                                    class="d-flex align-items-center"
-                                    style="min-width: 120px"
+                            <!-- Nombre del Jefe y su Nota -->
+                            <div
+                                class="d-flex justify-content-between align-items-center mb-1"
+                            >
+                                <span class="font-weight-bold">{{
+                                    jefe.name
+                                }}</span>
+                                <b-badge
+                                    :variant="getJefeVariant(jefe.avg)"
+                                    pill
                                 >
-                                    <b-progress
-                                        :value="data.value"
-                                        max="10"
-                                        height="8px"
-                                        class="flex-grow-1 me-2 shadow-sm"
-                                        :variant="
-                                            data.value < 5
-                                                ? 'danger'
-                                                : data.value < 7.5
-                                                  ? 'warning'
-                                                  : 'success'
-                                        "
-                                    ></b-progress>
-                                    <span
-                                        class="fw-bold small"
-                                        :class="
-                                            data.value < 5
-                                                ? 'text-danger'
-                                                : data.value < 7.5
-                                                  ? 'text-warning'
-                                                  : 'text-success'
-                                        "
-                                    >
-                                        {{ data.value }}
-                                    </span>
-                                </div>
-                            </template>
-                        </b-table>
+                                    {{ jefe.avg }} / 10
+                                </b-badge>
+                            </div>
+
+                            <!-- Barra Horizontal de Promedio -->
+                            <b-progress
+                                :value="jefe.avg"
+                                :max="10"
+                                :variant="getJefeVariant(jefe.avg)"
+                                height="20px"
+                                show-progress
+                                class="shadow-sm"
+                            ></b-progress>
+                        </div>
 
                         <div class="mt-3 p-2 bg-light rounded border">
                             <div class="row g-0 text-center">
@@ -752,6 +816,64 @@ ChartJS.register(...registerables);
 const loaded = ref(false);
 const fechaActual = ref(new Date().toLocaleString());
 
+const mostrarDetalleAlertas = ref(false);
+const alertasPaginadas = ref([]);
+const totalAlertas = ref(0);
+const paginaActual = ref(1);
+const porPagina = ref(10); // Cantidad de registros por página
+const cargandoAlertas = ref(false);
+
+const camposAlertas = [
+    { key: "rut", label: "RUT Colaborador", sortable: true },
+    { key: "rec", label: "Puntaje", sortable: true },
+    { key: "turno", label: "Turno", sortable: true },
+    { key: "estado", label: "Prioridad" },
+];
+
+const obtenerAlertasPaginadas = async (page = 1) => {
+    const token = useCookie("admin_token").value;
+    cargandoAlertas.ref = true;
+
+    try {
+        // Asumiendo que tu API permite filtrar por puntaje <= 5 y paginar
+        const response = await $fetch(
+            "https://pybingenieriachile.cl/api/encuestas/api/admin/alertas-full",
+            {
+                params: {
+                    page: page,
+                    limit: porPagina.value,
+                    max_score: 5, // Filtro para traer solo críticos/bajos
+                },
+                headers: { Authorization: `Bearer ${token}` },
+            },
+        );
+
+        alertasPaginadas.value = response.data; // Los registros de esta página
+        totalAlertas.value = response.total; // El total de registros en la BD
+        paginaActual.value = page;
+    } catch (error) {
+        console.error("Error al cargar alertas completas:", error);
+    } finally {
+        cargandoAlertas.value = false;
+    }
+};
+
+const abrirModalAlertas = () => {
+    mostrarDetalleAlertas.value = true;
+    obtenerAlertasPaginadas(1); // Carga la primera página al abrir
+};
+
+const trabajadoresEnAlerta = computed(() => {
+    if (!stats.value.ultimas) return [];
+
+    return stats.value.ultimas
+        .filter((t) => t.rec <= 5) // El backend dice que < 6 es Bajo/Crítico
+        .map((t) => ({
+            ...t,
+            estado: t.rec <= 3 ? "Crítico" : "Bajo",
+        }));
+});
+
 // INICIALIZACIÓN DE STATS CON VALORES POR DEFECTO PARA EVITAR ERROR 'UNDEFINED'
 const stats = ref({
     nps: "0",
@@ -770,6 +892,14 @@ const stats = ref({
 const barData = ref({ labels: [], datasets: [] });
 const radarData = ref({ labels: [], datasets: [] });
 const distData = ref({ labels: [], datasets: [] });
+
+function getJefeVariant(avg) {
+    const nota = parseFloat(avg);
+    if (nota >= 8.5) return "success"; // Excelente gestión (Verde)
+    if (nota >= 7.0) return "info"; // Buena gestión (Azul)
+    if (nota >= 5.0) return "warning"; // Alerta / Necesita capacitación (Amarillo)
+    return "danger"; // Crítico / Intervención RRHH (Rojo)
+}
 
 const logout = () => {
     // 1. Obtenemos la cookie del token
@@ -872,6 +1002,18 @@ onMounted(cargarDashboard);
 </script>
 
 <style scoped>
+.cursor-pointer {
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.cursor-pointer:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
 .bg-navy {
     background-color: #1a4479 !important;
 }
