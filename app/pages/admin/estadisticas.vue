@@ -818,6 +818,32 @@
                 </b-col>
             </b-row>
         </b-container>
+
+        <!-- Modal para detalle de encuestados por gráfico M5 -->
+        <b-modal
+            v-model="mostrarDetalleGrafico"
+            :title="'Detalle: ' + detalleGraficoTitulo"
+            size="lg"
+            hide-footer
+        >
+            <b-table
+                :items="datosDetalleGrafico"
+                :fields="camposDetalleGrafico"
+                striped
+                hover
+                responsive
+                small
+            >
+                <template #cell(rut)="data">
+                    <span class="font-monospace fw-bold">{{
+                        formatearRut(data.value)
+                    }}</span>
+                </template>
+            </b-table>
+            <div v-if="cargandoDetalleGrafico" class="text-center py-3">
+                <b-spinner small variant="primary"></b-spinner>
+            </div>
+        </b-modal>
     </div>
 </template>
 
@@ -842,6 +868,18 @@ const camposAlertas = [
     { key: "rut", label: "RUT Colaborador", sortable: true },
     { key: "rec", label: "Puntaje", sortable: true },
     { key: "turno", label: "Turno", sortable: true },
+];
+
+const mostrarDetalleGrafico = ref(false);
+const detalleGraficoTitulo = ref("");
+const datosDetalleGrafico = ref([]);
+const cargandoDetalleGrafico = ref(false);
+
+const camposDetalleGrafico = [
+    { key: "rut", label: "RUT" },
+    { key: "nombre", label: "Nombre" }, // Si tu API lo provee
+    { key: "rec", label: "Nota" },
+    { key: "fecha", label: "Fecha" },
 ];
 
 const formatearRut = (rut) => {
@@ -927,6 +965,9 @@ const stats = ref({
     prioridades: [],
     ultimas: [],
     rankingJefes: [],
+    statsTurnos: [], // Inicializar como array vacío evita el error de .map()
+    distribucion: [],
+    radar: [],
 });
 
 const barData = ref({ labels: [], datasets: [] });
@@ -967,17 +1008,25 @@ const cargarDashboard = async () => {
             },
         );
 
+        // 1. VALIDACIÓN CRÍTICA: Verificar que data y statsTurnos existan
+        if (!data || !data.statsTurnos) {
+            console.warn("La API respondió pero falta 'statsTurnos':", data);
+            // Inicializamos con un array vacío para que los .map() no fallen
+            data.statsTurnos = [];
+        }
+
         // Asignar datos al objeto stats
         stats.value = data;
         fechaActual.value = new Date().toLocaleString();
 
-        // Configurar Gráficos
+        // 2. Configurar Gráfico Radar (M3)
+        // Usamos un fallback (data.radar || []) para evitar fallos
         radarData.value = {
             labels: ["Equipo", "Puesto", "Empresa", "Jefatura", "Condiciones"],
             datasets: [
                 {
                     label: "Promedio",
-                    data: data.radar,
+                    data: data.radar || [0, 0, 0, 0, 0],
                     backgroundColor: "rgba(146, 208, 80, 0.2)",
                     borderColor: "#92d050",
                     pointBackgroundColor: "#1a4479",
@@ -985,6 +1034,7 @@ const cargarDashboard = async () => {
             ],
         };
 
+        // 3. Configurar Gráfico de Barras Emocional (M5)
         const emos = [
             "Estrés",
             "Alegría",
@@ -993,29 +1043,74 @@ const cargarDashboard = async () => {
             "Frustración",
         ];
         const colors = ["#dc3545", "#198754", "#ffc107", "#0dcaf0", "#fd7e14"];
+
         barData.value = {
-            labels: data.statsTurnos.map((t) => t.nombre),
+            // Verificamos t.nombre con un fallback
+            labels: data.statsTurnos.map((t) => t.nombre || "Sin nombre"),
             datasets: emos.map((e, i) => ({
                 label: e,
-                data: data.statsTurnos.map((t) => t.emociones[e] || 0),
+                // Verificamos que t.emociones exista antes de acceder a la emoción
+                data: data.statsTurnos.map(
+                    (t) => (t.emociones ? t.emociones[e] : 0) || 0,
+                ),
                 backgroundColor: colors[i],
             })),
         };
 
-        distData.value = {
-            labels: data.distribucion.map((d) => d.label),
-            datasets: [
-                {
-                    data: data.distribucion.map((d) => d.value),
-                    backgroundColor: "#1a4479",
-                    borderRadius: 5,
-                },
-            ],
-        };
+        // 4. Configurar Histograma de Ánimo (M2)
+        if (data.distribucion) {
+            distData.value = {
+                labels: data.distribucion.map((d) => d.label),
+                datasets: [
+                    {
+                        data: data.distribucion.map((d) => d.value),
+                        backgroundColor: "#1a4479",
+                        borderRadius: 5,
+                    },
+                ],
+            };
+        }
 
+        // Finalmente marcamos como cargado
         loaded.value = true;
     } catch (e) {
-        console.error("Error cargando dashboard:", e);
+        // Captura errores de red o de código
+        console.error("Error crítico cargando dashboard:", e);
+        // Opcional: podrías poner un estado de error para mostrar un mensaje al usuario
+    }
+};
+
+const handleChartClick = async (event, elements) => {
+    if (elements.length > 0) {
+        const elementIndex = elements[0].index; // El índice del grupo (G1, G2...)
+        const datasetIndex = elements[0].datasetIndex; // El índice de la emoción (Estrés, Alegría...)
+
+        const grupoNombre = barData.value.labels[elementIndex];
+        const emocionNombre = barData.value.datasets[datasetIndex].label;
+
+        detalleGraficoTitulo.value = `${emocionNombre} en ${grupoNombre}`;
+        mostrarDetalleGrafico.value = true;
+        cargandoDetalleGrafico.value = true;
+
+        try {
+            const token = useCookie("admin_token").value;
+            // Llamada a API filtrando por el grupo y la emoción seleccionada
+            const response = await $fetch(
+                "https://pybingenieriachile.cl/api/encuestas/api/admin/detalle-emocion",
+                {
+                    params: {
+                        turno: grupoNombre,
+                        emocion: emocionNombre,
+                    },
+                    headers: { Authorization: `Bearer ${token}` },
+                },
+            );
+            datosDetalleGrafico.value = response.data;
+        } catch (error) {
+            console.error("Error al obtener detalle del gráfico:", error);
+        } finally {
+            cargandoDetalleGrafico.value = false;
+        }
     }
 };
 
@@ -1026,7 +1121,20 @@ const jefeFields = [
 const stackedOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    scales: { x: { stacked: true }, y: { stacked: true } },
+    onClick: handleChartClick, // <-- Añade esto
+    plugins: {
+        tooltip: { enabled: true },
+    },
+    scales: {
+        x: { stacked: true },
+        y: { stacked: true },
+    },
+    // Opcional: Cambiar cursor al pasar sobre las barras
+    onHover: (event, chartElement) => {
+        event.native.target.style.cursor = chartElement.length
+            ? "pointer"
+            : "default";
+    },
 };
 const radarOptions = {
     scales: { r: { beginAtZero: true, max: 5 } },
