@@ -394,11 +394,43 @@
                                 ><b-form-input
                                     v-model="form.cargo" /></b-form-group
                         ></b-col>
-                        <b-col md="6"
-                            ><b-form-group label="Jefe Directo:"
-                                ><b-form-input
-                                    v-model="form.jefeDirecto" /></b-form-group
-                        ></b-col>
+                            <b-col md="6">
+                                <b-form-group label="Jefe Directo:">
+                                    <b-dropdown
+                                        ref="elDropdown"
+                                        variant="outline-secondary"
+                                        class="w-100 mi-dropdown-custom"
+                                        menu-class="w-100"
+                                        no-caret
+                                    >
+                                        <template #button-content>
+                                            <div class="text-start d-flex justify-content-between align-items-center">
+                                                <b-form-input
+                                                    v-model="form.jefeDirecto"
+                                                    placeholder="Escribe para buscar..."
+                                                    class="border-0 p-0 bg-transparent shadow-none"
+                                                    @click.stop
+                                                    @update:modelValue="manejarEscritura"
+                                                />
+                                                <i class="bi bi-chevron-down text-secondary"></i>
+                                            </div>
+                                        </template>
+
+                                        <!-- Opciones filtradas de imagen_2.png -->
+                                        <b-dropdown-item
+                                            v-for="jefe in jefesFiltrados"
+                                            :key="jefe"
+                                            @click="seleccionarJefe(jefe)"
+                                        >
+                                            {{ jefe }}
+                                        </b-dropdown-item>
+
+                                        <b-dropdown-text v-if="jefesFiltrados.length === 0" class="text-primary">
+                                            <i class="bi bi-plus-circle"></i> Nuevo: "{{ form.jefeDirecto }}"
+                                        </b-dropdown-text>
+                                    </b-dropdown>
+                                </b-form-group>
+                            </b-col>
                         <!-- <b-col md="6"
                             ><b-form-group
                                 label="Supervisor Directo (opcional):"
@@ -817,6 +849,22 @@ const mensajeError = ref("");
 const mostrarAlerta = ref(false);
 const modalFinal = ref(null);
 
+const jefesSugeridos = ref([
+    "RODRIGO GUTIERREZ", "SAMUEL GALLARDO", "NICOLAS GELDES",
+    "MAURICIO RIVERA", "MAURICIO GALLEGILLOS", "JAIME PAREDES",
+    "MOISES ALVAREZ", "DAVID FERNANDEZ", "JAVIER IBAÑEZ",
+    "MAURICIO ENRIQUEZ", "GONZALO ESTAY", "JONATHAN LOBOS",
+    "HECTOR SECO", "RODRIGO ARAYA", "DARCO HERRERA",
+    "HECTOR ARAYA", "JORGE OSORES", "ANIBAL ENSINA",
+    "GERMAN SALINAS", "ANGELO DIAZ", "JUAN PABLO PUA",
+    "OSCAR BRISEÑO", "LEONARDO ROJAS", "GERMAN LOBOS",
+    "LUZ LOPEZ", "MARCELO HIDALGO", "VANESA ROBLES",
+    "ABEL OCAYO", "FELIPE FERNANDEZ", "JOSE PEREZ",
+    "LAZARO ZUÑIGA", "SENNI CAMPOS", "ESTEBAN ALVORNOZ",
+    "EMILIO RODRIGUEZ", "MAURICIO GALLEGUILLOS", "WILLIAMS SOTO",
+    "NATALIA LAZO"
+]);
+
 const form = ref({
     cargo: "",
     jefeDirecto: "",
@@ -835,6 +883,28 @@ const form = ref({
     mejoras: "",
     destacados: "",
 });
+
+const elDropdown = ref(null);
+
+const jefesFiltrados = computed(() => {
+    const busqueda = form.value.jefeDirecto.toUpperCase();
+    if (!busqueda) return jefesSugeridos.value;
+    return jefesSugeridos.value.filter(jefe => jefe.includes(busqueda));
+});
+
+const manejarEscritura = (valor) => {
+    form.value.jefeDirecto = valor.toUpperCase();
+
+    // Si hay texto y el dropdown existe, lo abrimos
+    if (form.value.jefeDirecto.length > 0 && elDropdown.value) {
+        elDropdown.value.show();
+    }
+};
+
+const seleccionarJefe = (nombre) => {
+    form.value.jefeDirecto = nombre;
+};
+
 const mostrarGracias = ref(false);
 
 const identificacionValida = computed(() => {
@@ -1240,3 +1310,33 @@ onMounted(async () => {
     }
 });
 </script>
+
+<style scoped>
+/* Forzamos el botón interno a ocupar todo el ancho */
+.mi-dropdown-custom :deep(.dropdown-toggle) {
+    width: 100% !important;
+    display: block !important;
+}
+
+/* Aseguramos que el contenedor del flex (donde está el input) también se expanda */
+.mi-dropdown-custom :deep(.text-start.d-flex) {
+    width: 100% !important;
+}
+
+/* El input debe crecer para ocupar todo el espacio disponible entre el texto y la flecha */
+.mi-dropdown-custom :deep(input) {
+    flex-grow: 1;
+    width: 100%;
+}
+
+/* Mantenemos el bloqueo del fondo gris que pediste antes */
+.mi-dropdown-custom :deep(.btn-outline-secondary:hover),
+.mi-dropdown-custom :deep(.btn-outline-secondary:active),
+.mi-dropdown-custom :deep(.btn-outline-secondary:focus),
+.mi-dropdown-custom :deep(.show > .btn-outline-secondary.dropdown-toggle) {
+    background-color: transparent !important;
+    color: inherit !important;
+    border-color: #dee2e6 !important;
+    box-shadow: none !important;
+}
+</style>
