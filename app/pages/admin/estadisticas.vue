@@ -825,6 +825,9 @@
             :title="'Detalle: ' + detalleGraficoTitulo"
             size="lg"
             hide-footer
+            ok-only
+            ok-title="Cancelar"
+            ok-variant="secondary"
         >
             <b-table
                 :items="datosDetalleGrafico"
