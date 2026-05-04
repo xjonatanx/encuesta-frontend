@@ -247,6 +247,19 @@
                             </div>
                         </template>
 
+                        <div
+                            class="d-flex align-items-center justify-content-center bg-primary-soft rounded-pill py-1 px-3 mb-3"
+                            style="border: 1px dashed #0d6efd"
+                        >
+                            <i
+                                class="bi bi-cursor-fill text-primary me-2 pulse-icon"
+                            ></i>
+                            <span class="text-primary fw-bold small">
+                                Exploración activa: Haz clic en cualquier color
+                                de las barras para ver la lista de personas.
+                            </span>
+                        </div>
+
                         <div class="chart-h">
                             <Bar :data="barData" :options="stackedOptions" />
                         </div>
@@ -843,6 +856,20 @@
                     }}</span>
                 </template>
             </b-table>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted">
+                    Total: {{ totalRegistrosDetalle }} registros
+                </small>
+
+                <b-pagination
+                    v-model="paginaActualDetalle"
+                    :total-rows="totalRegistrosDetalle"
+                    :per-page="limitePorPagina"
+                    @update:model-value="cargarPaginaDetalle"
+                    size="sm"
+                    pills
+                ></b-pagination>
+            </div>
             <div v-if="cargandoDetalleGrafico" class="text-center py-3">
                 <b-spinner small variant="primary"></b-spinner>
             </div>
@@ -866,6 +893,14 @@ const totalAlertas = ref(0);
 const paginaActual = ref(1);
 const porPagina = ref(10); // Cantidad de registros por página
 const cargandoAlertas = ref(false);
+
+const totalRegistrosDetalle = ref(0);
+const paginaActualDetalle = ref(1);
+const limitePorPagina = ref(10);
+
+// Guardamos estos para cuando el usuario cambie de página
+const ultimoGrupoSeleccionado = ref("");
+const ultimaEmocionSeleccionada = ref("");
 
 const camposAlertas = [
     { key: "rut", label: "RUT Colaborador", sortable: true },
@@ -1085,35 +1120,52 @@ const cargarDashboard = async () => {
 
 const handleChartClick = async (event, elements) => {
     if (elements.length > 0) {
-        const elementIndex = elements[0].index; // El índice del grupo (G1, G2...)
-        const datasetIndex = elements[0].datasetIndex; // El índice de la emoción (Estrés, Alegría...)
+        const elementIndex = elements[0].index;
+        const datasetIndex = elements[0].datasetIndex;
 
         const grupoNombre = barData.value.labels[elementIndex];
         const emocionNombre = barData.value.datasets[datasetIndex].label;
 
+        // Guardamos los filtros para la paginación futura
+        ultimoGrupoSeleccionado.value = grupoNombre;
+        ultimaEmocionSeleccionada.value = emocionNombre;
+        paginaActualDetalle.value = 1; // Resetear a la primera página al hacer nuevo click
+
         detalleGraficoTitulo.value = `${emocionNombre} en ${grupoNombre}`;
         mostrarDetalleGrafico.value = true;
-        cargandoDetalleGrafico.value = true;
 
-        try {
-            const token = useCookie("admin_token").value;
-            // Llamada a API filtrando por el grupo y la emoción seleccionada
-            const response = await $fetch(
-                "https://pybingenieriachile.cl/api/encuestas/api/admin/detalle-emocion",
-                {
-                    params: {
-                        turno: grupoNombre,
-                        emocion: emocionNombre,
-                    },
-                    headers: { Authorization: `Bearer ${token}` },
+        // Llamamos a la función de carga (factorizada para reutilizarla)
+        await cargarPaginaDetalle(1);
+    }
+};
+
+const cargarPaginaDetalle = async (pagina) => {
+    cargandoDetalleGrafico.value = true;
+    paginaActualDetalle.value = pagina;
+
+    try {
+        const token = useCookie("admin_token").value;
+        const response = await $fetch(
+            "https://pybingenieriachile.cl/api/encuestas/api/admin/detalle-emocion",
+            {
+                params: {
+                    turno: ultimoGrupoSeleccionado.value,
+                    emocion: ultimaEmocionSeleccionada.value,
+                    page: pagina,
+                    limit: limitePorPagina.value,
                 },
-            );
-            datosDetalleGrafico.value = response.data;
-        } catch (error) {
-            console.error("Error al obtener detalle del gráfico:", error);
-        } finally {
-            cargandoDetalleGrafico.value = false;
-        }
+                headers: { Authorization: `Bearer ${token}` },
+            },
+        );
+
+        // IMPORTANTE: Según tu backend, la data real está en response.data
+        datosDetalleGrafico.value = response.data;
+        // Según tu backend: res.json({ data, total, ... })
+        totalRegistrosDetalle.value = response.total;
+    } catch (error) {
+        console.error("Error al obtener detalle del gráfico:", error);
+    } finally {
+        cargandoDetalleGrafico.value = false;
     }
 };
 
