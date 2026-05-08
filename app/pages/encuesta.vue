@@ -381,7 +381,7 @@
                     </p>
                     <p class="font-weight-bold text-danger mb-0">
                         <i class="bi bi-shield-lock-fill"></i> La encuesta es
-                        totalmente anónima.
+                        totalmente confidencial.
                     </p>
                 </div>
                 <div class="p-4 border border-dark mb-4">
