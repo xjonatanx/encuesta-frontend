@@ -34,7 +34,7 @@
                                 <div class="d-flex align-items-start">
                                     <i
                                         class="bi bi-shield-lock-fill mr-3"
-                                        style="font-size: 1.5rem"
+                                        style="font-size: 1.5rem; margin-right: 10px"
                                     ></i>
                                     <div>
                                         <h6
@@ -44,7 +44,13 @@
                                         </h6>
                                         <p class="mb-0 small text-dark">
                                             Esta encuesta es
-                                            <strong>100% anónima</strong>.
+                                            <strong>100% confidencial</strong>
+                                            <ul>
+                                                <li>
+                                                    Sólo RR.HH. accederá a la
+                                                    información.
+                                                </li>
+                                            </ul>
                                             Solicitamos tu RUT exclusivamente
                                             para:
                                         </p>

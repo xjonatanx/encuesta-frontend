@@ -850,20 +850,20 @@ const mostrarAlerta = ref(false);
 const modalFinal = ref(null);
 
 const jefesSugeridos = ref([
-    "RODRIGO GUTIERREZ", "SAMUEL GALLARDO", "NICOLAS GELDES",
-    "MAURICIO RIVERA", "MAURICIO GALLEGILLOS", "JAIME PAREDES",
-    "MOISES ALVAREZ", "DAVID FERNANDEZ", "JAVIER IBAÑEZ",
-    "MAURICIO ENRIQUEZ", "GONZALO ESTAY", "JONATHAN LOBOS",
-    "HECTOR SECO", "RODRIGO ARAYA", "DARCO HERRERA",
-    "HECTOR ARAYA", "JORGE OSORES", "ANIBAL ENSINA",
-    "GERMAN SALINAS", "ANGELO DIAZ", "JUAN PABLO PUA",
-    "OSCAR BRISEÑO", "LEONARDO ROJAS", "GERMAN LOBOS",
-    "LUZ LOPEZ", "MARCELO HIDALGO", "VANESA ROBLES",
-    "ABEL OCAYO", "FELIPE FERNANDEZ", "JOSE PEREZ",
-    "LAZARO ZUÑIGA", "SENNI CAMPOS", "ESTEBAN ALVORNOZ",
-    "EMILIO RODRIGUEZ", "MAURICIO GALLEGUILLOS", "WILLIAMS SOTO",
-    "NATALIA LAZO"
+    "ABEL OCAYO", "ANÍBAL ENCINA", "ÁNGELO DÍAZ",
+    "DARCO HERRERA", "DAVID FERNÁNDEZ", "EMILIO RODRÍGUEZ",
+    "ESTEBAN ALBORNOZ", "FELIPE FERNÁNDEZ", "GERMÁN LOBOS",
+    "GERMÁN SALINAS", "GONZALO ESTAY", "HÉCTOR ARAYA",
+    "HÉCTOR SECO", "JAIME PAREDES", "JAVIER IBÁÑEZ",
+    "JONATHAN LOBOS", "JORGE OSORES", "JOSÉ PÉREZ",
+    "JUAN PABLO PÚA", "LÁZARO ZÚÑIGA", "LEONARDO ROJAS",
+    "LUZ LÓPEZ", "MARCELO HIDALGO", "MAURICIO ENRÍQUEZ",
+    "MAURICIO GALLEGUILLOS", "MAURICIO RIVERA", "NATALIA LAZO",
+    "NICOLÁS GELDES", "ÓSCAR BRISEÑO", "RODRIGO ARAYA",
+    "RODRIGO GUTIÉRREZ", "SAMUEL GALLARDO", "SENNI CAMPOS",
+    "VANESA ROBLES", "WILLIAMS SOTO"
 ]);
+
 
 const form = ref({
     cargo: "",
@@ -1051,7 +1051,7 @@ const metaSeccion = computed(() => {
             escalaTexto:
                 "1 = Nunca, 2 = Casi nunca, 3 = A veces, 4 = Bastantes veces, 5 = Siempre",
             opciones: [1, 2, 3, 4, 5],
-            imagen: "/images/jefatura.jpg",
+            imagen: "/encuestas/images/jefatura.jpg",
             frase: "La confianza y el respeto entre trabajador y jefatura son clave para lograr una comunicación efectiva y un ambiente laboral positivo.",
         },
         puesto: {
@@ -1061,7 +1061,7 @@ const metaSeccion = computed(() => {
             escalaTexto:
                 "1 = Totalmente en desacuerdo, 2 = En desacuerdo, 3 = Ni de acuerdo ni en desacuerdo, 4 = De acuerdo, 5 = Totalmente de acuerdo",
             opciones: [1, 2, 3, 4, 5],
-            imagen: "/images/puesto.jpg",
+            imagen: "/encuestas/images/puesto.jpg",
             frase: `La empresa y sus trabajadores avanzan juntos hacia objetivos comunes, promoviendo la comunicación, la colaboración y la seguridad como pilares fundamentales de nuestro compromiso laboral.`,
         },
         equipo: {
@@ -1072,7 +1072,7 @@ const metaSeccion = computed(() => {
             escalaTexto:
                 "1 = Totalmente en desacuerdo, 2 = En desacuerdo, 3 = Ni de acuerdo ni en desacuerdo, 4 = De acuerdo, 5 = Totalmente de acuerdo",
             opciones: [1, 2, 3, 4, 5],
-            imagen: "/images/equipo.jpg",
+            imagen: "/encuestas/images/equipo.jpg",
             frase: `Cada trabajador aporta conocimientos y experiencias que fortalecen al grupo y hacen posible un ambiente laboral más sano y productivo.`,
         },
         condiciones: {
@@ -1082,7 +1082,7 @@ const metaSeccion = computed(() => {
             escalaTexto:
                 "1 = Totalmente en desacuerdo, 2 = En desacuerdo, 3 = Ni de acuerdo ni en desacuerdo, 4 = De acuerdo, 5 = Totalmente de acuerdo",
             opciones: [1, 2, 3, 4, 5],
-            imagen: "/images/condiciones.jpg",
+            imagen: "/encuestas/images/condiciones.jpg",
             frase: `Mantener en buen estado las instalaciones de P&B es clave para la seguridad y bienestar de todos.
             Las revisiones periódicas previenen accidentes y reflejan compromiso con un trabajo seguro y ordenado.`,
         },
