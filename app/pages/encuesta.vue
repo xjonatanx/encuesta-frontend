@@ -837,7 +837,9 @@ const opcionesTurno = [
   { value: 'G1 DIA', text: 'G1 DIA' },
   { value: 'G2 NOCHE', text: 'G2 NOCHE' },
   { value: 'G3 DIA', text: 'G3 DIA' },
-  { value: 'G4 NOCHE', text: 'G4 NOCHE' }
+  { value: 'G4 NOCHE', text: 'G4 NOCHE' },
+  { value: 'TURNO 5 X 2', text: 'TURNO 5 X 2' },
+  { value: 'TURNO 4 X 3', text: 'TURNO 4 X 3' }
 ];
 
 const instance = getCurrentInstance();
