@@ -222,6 +222,110 @@
                 </div>
             </b-modal>
 
+            <b-row class="mb-4" v-if="loaded">
+                <b-col cols="12">
+                    <div
+                        class="bg-dark text-white p-4 rounded-lg shadow-lg position-relative overflow-hidden"
+                        style="border-radius: 8px"
+                    >
+                        <div
+                            class="d-flex justify-content-between align-items-end mb-2"
+                        >
+                            <div>
+                                <h5
+                                    class="text-uppercase font-weight-bold mb-1"
+                                    style="letter-spacing: 1px"
+                                >
+                                    <b>Puntaje Total General</b>
+                                </h5>
+                                <small class="text-white"
+                                    >Suma de todas las secciones (Máx. 275
+                                    pts)</small
+                                >
+                            </div>
+                            <div class="text-right">
+                                <span
+                                    class="display-4 font-weight-bold text-success"
+                                    >{{ stats.puntajeGlobal }}</span
+                                >
+                                <span
+                                    class="ml-2 text-muted"
+                                    style="color: white !important"
+                                    >pts</span
+                                >
+                            </div>
+                        </div>
+
+                        <div class="semaforo-wrapper">
+                            <div class="semaforo-bar">
+                                <div class="seg bg-danger"></div>
+                                <div class="seg bg-warning"></div>
+                                <div class="seg bg-primary"></div>
+                                <div class="seg bg-success"></div>
+                                <div class="seg bg-dark-success"></div>
+                            </div>
+
+                            <div
+                                class="semaforo-needle"
+                                :style="{
+                                    left:
+                                        (stats.puntajeGlobal / 275) * 100 + '%',
+                                }"
+                            ></div>
+                        </div>
+
+                        <div
+                            class="d-flex justify-content-between mt-2 text-muted small font-weight-bold"
+                        >
+                            <span>5-55</span>
+                            <span>110</span>
+                            <span>165</span>
+                            <span>220</span>
+                            <span>275</span>
+                        </div>
+                    </div>
+                </b-col>
+            </b-row>
+
+            <b-row class="mb-5" v-if="loaded">
+                <b-col
+                    v-for="item in stats.secciones"
+                    :key="item.label"
+                    cols="12"
+                    md="2"
+                    class="flex-grow-1"
+                >
+                    <b-card class="border-0 shadow-sm text-center h-100 py-2">
+                        <h6
+                            class="text-muted font-weight-bold small text-uppercase mb-3"
+                        >
+                            {{ item.label }}
+                        </h6>
+
+                        <div class="mini-semaforo-wrapper mb-2">
+                            <div class="mini-bar">
+                                <div class="m-seg bg-danger"></div>
+                                <div class="m-seg bg-warning"></div>
+                                <div class="m-seg bg-primary"></div>
+                                <div class="m-seg bg-success"></div>
+                                <div class="m-seg bg-dark-success"></div>
+                            </div>
+                            <div
+                                class="mini-needle"
+                                :style="{
+                                    left: (item.puntos / 55) * 100 + '%',
+                                }"
+                            ></div>
+                        </div>
+
+                        <div class="font-weight-bold h5 mb-0">
+                            {{ item.puntos }}
+                        </div>
+                        <small class="text-muted">pts</small>
+                    </b-card>
+                </b-col>
+            </b-row>
+
             <b-row v-if="loaded">
                 <b-col lg="8" class="mb-4">
                     <b-card border-0 shadow-sm rounded-xl>
@@ -1284,5 +1388,64 @@ onMounted(cargarDashboard);
 .bi-hand-index-thumb {
     display: inline-block;
     animation: finger-move 1.5s infinite;
+}
+
+/* Colores específicos de la guía */
+.bg-dark-success {
+    background-color: #1b5e20 !important;
+}
+
+/* Barra Global */
+.semaforo-wrapper {
+    position: relative;
+    height: 30px;
+    width: 100%;
+    margin-top: 15px;
+}
+.semaforo-bar {
+    display: flex;
+    height: 100%;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.seg {
+    flex: 1;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.semaforo-needle {
+    position: absolute;
+    top: -5px;
+    height: 40px;
+    width: 4px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    transition: left 1.5s ease-in-out;
+    z-index: 5;
+}
+
+/* Barras Mini */
+.mini-semaforo-wrapper {
+    position: relative;
+    height: 10px;
+    width: 100%;
+}
+.mini-bar {
+    display: flex;
+    height: 100%;
+    border-radius: 3px;
+    overflow: hidden;
+    opacity: 0.7;
+}
+.m-seg {
+    flex: 1;
+}
+.mini-needle {
+    position: absolute;
+    top: -3px;
+    height: 16px;
+    width: 3px;
+    background-color: #333;
+    transition: left 1.5s ease-in-out;
 }
 </style>
