@@ -854,7 +854,7 @@ const modalFinal = ref(null);
 const jefesSugeridos = ref([
     "MAURO MORALES",
     "ANÍBAL ENCINA",
-    "DAVID FERNÁNDEZ", "EMILIO RODRÍGUEZ",
+    "DAVID FERNÁNDEZ",
     "ESTEBAN ALBORNOZ", "FELIPE FERNÁNDEZ",
     "HÉCTOR ARAYA",
     "JAIME PAREDES",
