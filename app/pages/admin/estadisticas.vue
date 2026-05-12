@@ -39,6 +39,64 @@
             </b-button>
         </nav>
 
+        <b-container fluid class="px-2 px-md-4 mt-3">
+            <b-card border-0 shadow-sm class="bg-navy text-white">
+                <div
+                    class="d-flex flex-column flex-md-row align-items-md-center justify-content-between"
+                >
+                    <div class="mb-3 mb-md-0">
+                        <h5 class="mb-0 fw-bold">
+                            Buscador de Encuestas por Trabajador
+                        </h5>
+                        <small class="text-light opacity-75"
+                            >Ingrese el RUT para revisar las respuestas del
+                            personal.</small
+                        >
+                    </div>
+
+                    <div class="w-100" style="max-width: 450px">
+                        <b-input-group>
+                            <b-form-input
+                                v-model="rutBusqueda"
+                                placeholder="Ej: 123456789"
+                                class="border-0"
+                                @keyup.enter="buscarPorRut"
+                            ></b-form-input>
+                            <template #append>
+                                <b-button
+                                    variant="warning"
+                                    @click="buscarPorRut"
+                                    class="px-4"
+                                >
+                                    Ver
+                                </b-button>
+                            </template>
+                        </b-input-group>
+                    </div>
+                </div>
+            </b-card>
+        </b-container>
+
+        <b-modal
+            v-if="encuestaSeleccionada"
+            v-model="mostrarVisor"
+            size="xl"
+            hide-footer
+            scrollable
+            ok-only
+            ok-title="Cerrar"
+            @hidden="encuestaSeleccionada = null"
+        >
+            <template #modal-title>
+                Visor de Encuesta Individual: {{ rutBusqueda }}
+            </template>
+
+            <SurveyExpediente
+                :encuesta="encuestaSeleccionada"
+                :dictionary="surveyQuestions"
+            />
+        </b-modal>
+
         <b-container fluid class="p-4">
             <b-row v-if="loaded">
                 <b-col
@@ -985,6 +1043,89 @@
 import { ref, onMounted } from "vue";
 import { Bar, Radar } from "vue-chartjs";
 import { Chart as ChartJS, registerables } from "chart.js";
+import { surveyQuestions } from "@/utils/surveyData";
+
+const rutBusqueda = ref("");
+const buscando = ref(false);
+const mostrarVisor = ref(false);
+const encuestaSeleccionada = ref(null);
+
+// 1. Función para formatear mientras el usuario escribe (Vista)
+const aplicarFormatoRut = (valor) => {
+    // Limpiar puntos y guiones previos
+    let rut = valor.replace(/\./g, "").replace(/-/g, "").toUpperCase();
+    if (rut.length <= 1) return rut;
+
+    // Separar Cuerpo y DV
+    let cuerpo = rut.slice(0, -1);
+    let dv = rut.slice(-1);
+
+    // Formatear cuerpo con puntos
+    cuerpo = cuerpo
+        .split("")
+        .reverse()
+        .join("")
+        .replace(/(?=\d)\d{3}(?=\d)/g, "$&.")
+        .split("")
+        .reverse()
+        .join("");
+
+    return `${cuerpo}-${dv}`;
+};
+
+// Watcher para que el input se vea bonito en tiempo real
+watch(rutBusqueda, (nuevoValor) => {
+    if (nuevoValor) {
+        // Evitamos bucle infinito: solo actualizamos si el formato cambió
+        const formateado = aplicarFormatoRut(nuevoValor);
+        if (nuevoValor !== formateado) {
+            rutBusqueda.value = formateado;
+        }
+    }
+});
+
+const buscarPorRut = async () => {
+    if (!rutBusqueda.value) return;
+    buscando.value = true;
+
+    const token = useCookie("admin_token").value;
+    const rutLimpio = rutBusqueda.value.replace(/\./g, "").replace(/-/g, "");
+
+    try {
+        const res = await $fetch(
+            `https://pybingenieriachile.cl/api/encuestas/api/admin/survey-by-rut/${rutLimpio}`,
+            {
+                headers: { Authorization: `Bearer ${token}` },
+            },
+        );
+
+        if (res && res.survey) {
+            // Aseguramos que las respuestas sean objetos
+            const data = { ...res.survey };
+            if (typeof data.respuestas === "string")
+                data.respuestas = JSON.parse(data.respuestas);
+            if (typeof data.emociones === "string")
+                data.emociones = JSON.parse(data.emociones);
+
+            // 1. Cargamos los datos
+            encuestaSeleccionada.value = data;
+            // 2. Abrimos el visor
+            mostrarVisor.value = true;
+        }
+    } catch (e) {
+        alert("No se encontró la encuesta para el RUT " + rutLimpio);
+    } finally {
+        buscando.value = false;
+    }
+};
+
+// Función para limpiar al cerrar y evitar errores de "null component"
+const cerrarVisor = () => {
+    mostrarVisor.value = false;
+    setTimeout(() => {
+        encuestaSeleccionada.value = null;
+    }, 300); // Esperamos a que termine la animación de cierre
+};
 
 ChartJS.register(...registerables);
 
