@@ -34,7 +34,10 @@
                                 <div class="d-flex align-items-start">
                                     <i
                                         class="bi bi-shield-lock-fill mr-3"
-                                        style="font-size: 1.5rem; margin-right: 10px"
+                                        style="
+                                            font-size: 1.5rem;
+                                            margin-right: 10px;
+                                        "
                                     ></i>
                                     <div>
                                         <h6
@@ -42,7 +45,7 @@
                                         >
                                             Encuesta Confidencial
                                         </h6>
-                                        <p class="mb-0 small text-dark">
+                                        <div class="mb-3">
                                             Esta encuesta es
                                             <strong>100% confidencial</strong>
                                             <ul>
@@ -51,9 +54,7 @@
                                                     información.
                                                 </li>
                                             </ul>
-                                            Solicitamos tu RUT exclusivamente
-                                            para:
-                                        </p>
+                                        </div>
                                         <ul
                                             class="pl-3 mb-0 mt-1 small text-dark"
                                         >

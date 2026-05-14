@@ -85,16 +85,21 @@
             scrollable
             ok-only
             ok-title="Cerrar"
+            title="Visor de Encuesta Individual"
             @hidden="encuestaSeleccionada = null"
         >
-            <template #modal-title>
-                Visor de Encuesta Individual: {{ rutBusqueda }}
-            </template>
-
             <SurveyExpediente
                 :encuesta="encuestaSeleccionada"
                 :dictionary="surveyQuestions"
             />
+            <b-button
+                variant="primary"
+                @click="descargarExpediente(rutBusqueda)"
+                class="d-flex align-items-center"
+            >
+                <i class="bi bi-file-earmark-pdf me-2"></i>
+                Descargar Expediente (PDF)
+            </b-button>
         </b-modal>
 
         <b-container fluid class="p-4">
@@ -1049,6 +1054,32 @@ const rutBusqueda = ref("");
 const buscando = ref(false);
 const mostrarVisor = ref(false);
 const encuestaSeleccionada = ref(null);
+
+const descargarExpediente = async (rut) => {
+    const token = useCookie("admin_token").value; // O donde guardes tu token de admin
+    const rutLimpio = rutBusqueda.value.replace(/\./g, "").replace(/-/g, "");
+
+    try {
+        const response = await $fetch(
+            `https://pybingenieriachile.cl/api/encuestas/api/admin/generate-pdf/${rutLimpio}`,
+            {
+                headers: { Authorization: `Bearer ${token}` },
+                responseType: "blob",
+            },
+        );
+
+        // Crear un link temporal para descargar el archivo
+        const url = window.URL.createObjectURL(new Blob([response]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `Expediente_${rut}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    } catch (error) {
+        console.error("Error al descargar:", error);
+    }
+};
 
 // 1. Función para formatear mientras el usuario escribe (Vista)
 const aplicarFormatoRut = (valor) => {
