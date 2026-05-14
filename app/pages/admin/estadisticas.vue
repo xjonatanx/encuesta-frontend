@@ -88,17 +88,48 @@
             title="Visor de Encuesta Individual"
             @hidden="encuestaSeleccionada = null"
         >
+            <b-button
+                style="margin: 0 auto"
+                variant="primary"
+                @click="descargarExpediente(rutBusqueda)"
+                class="d-flex align-items-center"
+                :disabled="descargandoPDF"
+            >
+                <b-spinner v-if="descargandoPDF" small class="me-2"></b-spinner>
+
+                <i v-else class="bi bi-file-earmark-pdf me-2"></i>
+
+                <span>
+                    {{
+                        descargandoPDF
+                            ? "Generando PDF..."
+                            : "Descargar Expediente (PDF)"
+                    }}
+                </span>
+            </b-button>
             <SurveyExpediente
                 :encuesta="encuestaSeleccionada"
                 :dictionary="surveyQuestions"
             />
+            <br />
             <b-button
+                style="margin: 0 auto"
                 variant="primary"
                 @click="descargarExpediente(rutBusqueda)"
                 class="d-flex align-items-center"
+                :disabled="descargandoPDF"
             >
-                <i class="bi bi-file-earmark-pdf me-2"></i>
-                Descargar Expediente (PDF)
+                <b-spinner v-if="descargandoPDF" small class="me-2"></b-spinner>
+
+                <i v-else class="bi bi-file-earmark-pdf me-2"></i>
+
+                <span>
+                    {{
+                        descargandoPDF
+                            ? "Generando PDF..."
+                            : "Descargar Expediente (PDF)"
+                    }}
+                </span>
             </b-button>
         </b-modal>
 
@@ -1054,8 +1085,10 @@ const rutBusqueda = ref("");
 const buscando = ref(false);
 const mostrarVisor = ref(false);
 const encuestaSeleccionada = ref(null);
+const descargandoPDF = ref(false);
 
 const descargarExpediente = async (rut) => {
+    descargandoPDF.value = true;
     const token = useCookie("admin_token").value; // O donde guardes tu token de admin
     const rutLimpio = rutBusqueda.value.replace(/\./g, "").replace(/-/g, "");
 
@@ -1078,6 +1111,8 @@ const descargarExpediente = async (rut) => {
         link.remove();
     } catch (error) {
         console.error("Error al descargar:", error);
+    } finally {
+        descargandoPDF.value = false; // Desactivar loading al finalizar
     }
 };
 
