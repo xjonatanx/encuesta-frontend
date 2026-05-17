@@ -595,6 +595,29 @@
                     <b-card border-0 shadow-sm rounded-xl>
                         <template #header>
                             <div
+                                v-if="
+                                    stats.rankingJefes &&
+                                    stats.rankingJefes.length > 5
+                                "
+                                class="d-flex align-items-center justify-content-center bg-primary-soft rounded-pill py-1 px-3 mb-3"
+                                style="border: 1px dashed #0d6efd"
+                            >
+                                <i
+                                    class="bi bi-mouse text-primary me-2 pulse-icon"
+                                    style="font-size: 0.9rem"
+                                ></i>
+                                <span
+                                    class="text-primary fw-bold"
+                                    style="
+                                        font-size: 0.8rem;
+                                        letter-spacing: 0.3px;
+                                    "
+                                >
+                                    Haz scroll o desliza dentro de este recuadro
+                                    para ver la lista completa
+                                </span>
+                            </div>
+                            <div
                                 class="d-flex justify-content-between align-items-center"
                             >
                                 <div>
@@ -614,38 +637,38 @@
                                 </i>
                             </div>
                         </template>
-
-                        <div
-                            v-for="jefe in stats.rankingJefes"
-                            :key="jefe.name"
-                            class="mb-4"
-                        >
-                            <!-- Nombre del Jefe y su Nota -->
+                        <div class="list-scroll-jefes custom-scroll pe-2">
                             <div
-                                class="d-flex justify-content-between align-items-center mb-1"
+                                v-for="jefe in stats.rankingJefes"
+                                :key="jefe.name"
+                                class="mb-4"
                             >
-                                <span class="font-weight-bold">{{
-                                    jefe.name
-                                }}</span>
-                                <b-badge
-                                    :variant="getJefeVariant(jefe.avg)"
-                                    pill
+                                <!-- Nombre del Jefe y su Nota -->
+                                <div
+                                    class="d-flex justify-content-between align-items-center mb-1"
                                 >
-                                    {{ jefe.avg }} / 10
-                                </b-badge>
+                                    <span class="font-weight-bold">{{
+                                        jefe.name
+                                    }}</span>
+                                    <b-badge
+                                        :variant="getJefeVariant(jefe.avg)"
+                                        pill
+                                    >
+                                        {{ jefe.avg }} / 10
+                                    </b-badge>
+                                </div>
+
+                                <!-- Barra Horizontal de Promedio -->
+                                <b-progress
+                                    :value="jefe.avg"
+                                    :max="10"
+                                    :variant="getJefeVariant(jefe.avg)"
+                                    height="20px"
+                                    show-progress
+                                    class="shadow-sm"
+                                ></b-progress>
                             </div>
-
-                            <!-- Barra Horizontal de Promedio -->
-                            <b-progress
-                                :value="jefe.avg"
-                                :max="10"
-                                :variant="getJefeVariant(jefe.avg)"
-                                height="20px"
-                                show-progress
-                                class="shadow-sm"
-                            ></b-progress>
                         </div>
-
                         <div class="mt-3 p-2 bg-light rounded border">
                             <div class="row g-0 text-center">
                                 <div class="col-4 border-end">
@@ -1654,5 +1677,10 @@ onMounted(cargarDashboard);
     width: 3px;
     background-color: #333;
     transition: left 1.5s ease-in-out;
+}
+
+.list-scroll-jefes {
+    max-height: 380px;
+    overflow-y: auto;
 }
 </style>
