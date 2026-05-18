@@ -735,12 +735,12 @@
                             class="d-flex justify-content-around align-items-center py-4"
                         >
                             <div class="text-center">
-                                <i class="bi bi-sun text-warning fs-4"></i>
+                                <i class="bi bi-people text-primary fs-4"></i>
                                 <h2 class="fw-bold text-primary mb-0">
                                     {{ stats.brecha?.dia }}
                                 </h2>
                                 <small class="text-muted fw-bold"
-                                    >AVG. DÍA</small
+                                    >AVG. G1 / G2</small
                                 >
                             </div>
 
@@ -776,12 +776,12 @@
                             </div>
 
                             <div class="text-center">
-                                <i class="bi bi-moon-stars text-navy fs-4"></i>
+                                <i class="bi bi-people-fill text-info fs-4"></i>
                                 <h2 class="fw-bold text-info mb-0">
                                     {{ stats.brecha?.noche }}
                                 </h2>
                                 <small class="text-muted fw-bold"
-                                    >AVG. NOCHE</small
+                                    >AVG. G3 / G4</small
                                 >
                             </div>
                         </div>
