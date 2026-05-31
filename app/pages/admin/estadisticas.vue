@@ -144,7 +144,7 @@
                             v: stats.nps,
                             c: 'primary',
                             i: 'star-fill',
-                            u: '/10',
+                            u: '/7',
                             t: 'Net Promoter Score: Mide el nivel de lealtad y qué tan probable es que los colaboradores recomienden trabajar en la organización.',
                         },
                         {
